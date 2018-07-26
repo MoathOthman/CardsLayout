@@ -17,7 +17,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         collectionView.collectionViewLayout = flow
         collectionView.dataSource = self
         collectionView.delegate = self
-//        collectionView.isPagingEnabled = true
+        collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
     }
     
@@ -30,17 +30,17 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCellReuseIdentifier", for: indexPath)
-        cell.layer.cornerRadius = 7.0
-        cell.backgroundColor = colors[indexPath.row]
+        cell.contentView.layer.cornerRadius = 15.0
+        cell.layer.shadowOpacity = 0.1
+        cell.layer.shadowColor = UIColor.black.cgColor
+        cell.layer.shadowOffset = CGSize(width: 4, height: 0)
+        cell.contentView.backgroundColor = colors[indexPath.row]
+        cell.clipsToBounds = false
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return colors.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        flow.endedDisplayingCell(at: indexPath)
     }
 }
 

@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="jWQ-Kq-YtS">
-                                <rect key="frame" x="0.0" y="40" width="355" height="607"/>
+                                <rect key="frame" x="0.0" y="40" width="335" height="607"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="QRr-3G-rfz">
                                     <size key="itemSize" width="50" height="50"/>
@@ -38,10 +38,10 @@
                                 </cells>
                             </collectionView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.0" green="0.67843137249999996" blue="0.43137254899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="jWQ-Kq-YtS" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="4PF-cm-JNL"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jWQ-Kq-YtS" secondAttribute="trailing" constant="20" id="555-3L-p1U"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jWQ-Kq-YtS" secondAttribute="trailing" constant="40" id="555-3L-p1U"/>
                             <constraint firstItem="jWQ-Kq-YtS" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="a3A-gH-o0B"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="jWQ-Kq-YtS" secondAttribute="bottom" constant="20" id="hcT-gQ-84l"/>
                         </constraints>

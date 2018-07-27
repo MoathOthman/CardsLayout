@@ -4,8 +4,7 @@
 //
 //  Created by Filipp Fediakov on 03.11.17.
 //  Copyright © 2017 filletofish. All rights reserved.
-//
-
+//a
 import UIKit
 
 class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -25,7 +24,12 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         UIColor(red: 237, green: 37, blue: 78),
         UIColor(red: 249, green: 220, blue: 92),
         UIColor(red: 194, green: 234, blue: 189),
- 
+        UIColor(red: 249, green: 220, blue: 92),
+        UIColor(red: 194, green: 234, blue: 189),
+        UIColor(red: 194, green: 234, blue: 109),
+        UIColor(red: 194, green: 234, blue: 119),
+        UIColor(red: 194, green: 234, blue: 149),
+
     ]
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

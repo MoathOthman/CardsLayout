@@ -8,10 +8,15 @@
 
 import UIKit
 
+struct MovedOutCard {
+    let contentOffsetWhenMoved: CGPoint
+    let attribute: UICollectionViewLayoutAttributes?
+}
+
 open class CardsCollectionViewLayout: UICollectionViewFlowLayout {
     
     /// maintain a cache for all disappearing cells
-    var movedOutCard: [Int: UICollectionViewLayoutAttributes?] = [:]
+    var movedOutCard: [Int: MovedOutCard] = [:]
     
     public var cellHeight: CGFloat = 400 {
         didSet {
@@ -19,7 +24,7 @@ open class CardsCollectionViewLayout: UICollectionViewFlowLayout {
         }
     }
     
-    private var cellSize: CGSize {
+    fileprivate var cellSize: CGSize {
         let marging: CGFloat = 40
         return CGSize(width: (self.collectionView.bounds.width - marging) / maximamScale, height: cellHeight)
     }
@@ -42,7 +47,29 @@ open class CardsCollectionViewLayout: UICollectionViewFlowLayout {
         }
     }
     
-    var lastCellPeekValue: CGFloat = -5
+    var maximamScale: CGFloat {
+        return 1.10803324099723
+    }
+    
+    var minimumScaleForTheLeftCard: CGFloat {
+        return 1.09
+    }
+    
+    // the offset from left
+    var stoppingLine: CGFloat {
+        return 33
+    }
+    
+    private var maxVisibleIndex: Int = 0
+    private var offsetWhenOneCardISHidden: CGFloat = 0
+
+}
+
+
+// MARK: - Layout computations
+
+extension CardsCollectionViewLayout {
+
     // MARK: UICollectionViewLayout
     
     override open var collectionView: UICollectionView {
@@ -58,10 +85,13 @@ open class CardsCollectionViewLayout: UICollectionViewFlowLayout {
     override open func prepare() {
         super.prepare()
         itemSize = self.cellSize
+        collectionView.decelerationRate = 1
+        minimumInteritemSpacing = 0
+        minimumInteritemSpacing = 0
+        minimumLineSpacing = 0
         assert(collectionView.numberOfSections == 1, "Multiple sections aren't supported!")
-        
     }
-    private var maxVisibleIndex: Int = 0
+    
     override open func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let totalItemsCount = collectionView.numberOfItems(inSection: 0)
         
@@ -73,12 +103,12 @@ open class CardsCollectionViewLayout: UICollectionViewFlowLayout {
         var deltaOffset = Int(collectionView.contentOffset.x) % Int(collectionView.bounds.width)
         
         var percentageDeltaOffset = CGFloat(deltaOffset) / collectionView.bounds.width
+        /// when swipping to right , make the diff so little
         if percentageDeltaOffset < 0 {
             percentageDeltaOffset *= 0.08
             deltaOffset = Int(percentageDeltaOffset * collectionView.bounds.width)
-            
         }
-        print(percentageDeltaOffset)
+        
         let visibleIndices = minVisibleIndex..<maxVisibleIndex
         
         var attributes: [UICollectionViewLayoutAttributes] = visibleIndices.map { index in
@@ -92,38 +122,20 @@ open class CardsCollectionViewLayout: UICollectionViewFlowLayout {
         
         if minVisibleIndex > 0 ,
             let movedAttribute = movedOutCard[minVisibleIndex - 1],
-            let moved = movedAttribute {
+            let moved = movedAttribute.attribute {
+            let offsetxmin = collectionView.contentOffset.x
+            let oldcenter = moved.center
+            let rect = CGRect(x: offsetxmin + stoppingLine , y: moved.bounds.origin.y, width: moved.bounds.width, height: moved.bounds.height)
+            moved.frame = rect
+            moved.center = CGPoint(x: moved.center.x, y: oldcenter.y)
+            moved.zIndex = Int.min
             attributes.append(moved)
         }
-        
         return attributes
-    }
-    
-    open override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        print("propoed", proposedContentOffset)
-        return super.targetContentOffset(forProposedContentOffset: proposedContentOffset, withScrollingVelocity: velocity)
     }
     
     override open func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
-    }
-}
-
-
-// MARK: - Layout computations
-
-extension CardsCollectionViewLayout {
-    
-    var maximamScale: CGFloat {
-        return 1.1
-    }
-    
-    var minimumScaleForTheLeftCard: CGFloat {
-        return 1.09
-    }
-    
-    var stoppingLine: CGFloat {
-        return collectionView.bounds.width / maximamScale - lastCellPeekValue
     }
     
     private func scale(at index: Int) -> CGFloat {
@@ -139,6 +151,7 @@ extension CardsCollectionViewLayout {
             rawScale += delta
         } else {
             rawScale -= delta
+            // check and set the scale of the left card
             if rawScale < minimumScaleForTheLeftCard {
                 rawScale = minimumScaleForTheLeftCard
             }
@@ -165,17 +178,33 @@ extension CardsCollectionViewLayout {
         attributes.center = CGPoint(x: contentCenterX + spacingX * CGFloat(proposedvisibleIndex()),
                                     y: midY + spacingY * CGFloat(proposedvisibleIndex()))
         attributes.zIndex = maximumVisibleItems - visibleIndex
+        // do not transform the items comming after the last visible item
         if visibleIndex != maximumVisibleItems - 1 {
-            
             attributes.transform = transform(atCurrentVisibleIndex: visibleIndex,
                                              percentageOffset: percentageDeltaOffset)
         }
         switch visibleIndex {
         case 0:
-            if deltaOffset >= stoppingLine {
-                let translate = CGAffineTransform(translationX: -stoppingLine, y: 0)
+            let cardWidth = collectionView.bounds.width
+            let nextCardOffset = cardWidth * CGFloat(attributes.indexPath.row + 1)
+            let offsetToNextCardOffset = abs(nextCardOffset - collectionView.contentOffset.x)
+
+            // check if we reached a point passing the stopping point
+            // if so pin it
+            if offsetToNextCardOffset <= stoppingLine {
+                print(cardWidth * CGFloat(attributes.indexPath.row + 1),nextCardOffset, collectionView.contentOffset.x)
+                let transition = -(nextCardOffset) / CGFloat(attributes.indexPath.row + 1) + stoppingLine
+                let translate = CGAffineTransform(translationX: transition, y: 0)
+                let offsetxmin = collectionView.contentOffset.x
+                let rect = CGRect(x: offsetxmin + stoppingLine , y: attributes.bounds.origin.y, width: attributes.bounds.width, height: attributes.bounds.height)
+                attributes.frame = rect
+                attributes.center = CGPoint(x: attributes.center.x,
+                                            y: midY)
+
                 attributes.transform = attributes.transform.concatenating(translate)
-                movedOutCard[indexPath.row] = attributes
+                
+                movedOutCard[indexPath.row] = MovedOutCard(contentOffsetWhenMoved: collectionView.contentOffset,
+                                                           attribute: attributes)
                 break
             }
             let translate = CGAffineTransform(translationX: -deltaOffset, y: 0)

@@ -22,13 +22,13 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     
     var colors: [UIColor]  = [
         UIColor(red: 237, green: 37, blue: 78),
+        UIColor(red: 249, green: 120, blue: 92),
+        UIColor(red: 294, green: 204, blue: 189),
         UIColor(red: 249, green: 220, blue: 92),
-        UIColor(red: 194, green: 234, blue: 189),
-        UIColor(red: 249, green: 220, blue: 92),
-        UIColor(red: 194, green: 234, blue: 189),
-        UIColor(red: 194, green: 234, blue: 109),
-        UIColor(red: 194, green: 234, blue: 119),
-        UIColor(red: 194, green: 234, blue: 149),
+        UIColor(red: 124, green: 234, blue: 189),
+        UIColor(red: 194, green: 134, blue: 109),
+        UIColor(red: 114, green: 214, blue: 119),
+        UIColor(red: 194, green: 184, blue: 149),
 
     ]
     
